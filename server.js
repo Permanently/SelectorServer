@@ -31,7 +31,7 @@ const item_functional = 20;
 const message_loading = '\u00a7aLoading... ';
 const menu_title = '\u00a70Choose a server';
 const message_error_exit = 'You didn\'t select a server to join! ';
-const message_bye = 'Bye!';
+const message_bye = 'Have a good day!';
 
 /* == END OF SETTINGS AREA == */
 
