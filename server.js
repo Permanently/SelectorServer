@@ -215,7 +215,7 @@ function generateItem(id = 0, label = '', lores = []) {
   var displayValue = {
     Name: {
       type: 'string',
-      value: label
+      value: JSON.stringify(label),
     },
     Lore: {
       type: 'list',
