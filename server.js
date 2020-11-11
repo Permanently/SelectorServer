@@ -20,10 +20,10 @@ const menu_map = {
        }]
    }],
    "Category 2": [420, ["LORE1", "LORE2"], {
-       "Some Server": [2, ["LORE1", "LORE2"], "server-other"]
+       "Some Server": [421, ["LORE1", "LORE2"], "server-other"]
    }],
-   "Category 3": [69, ["LORE1", "LORE2"], {
-       "Some Server": [2, ["LORE1", "LORE2"], "server-other"]
+   "Category 3": [69, ["LORE1"], {
+       "Some Server": [69, ["LORE1"], "server-other"]
    }],
 };
 // item settings
