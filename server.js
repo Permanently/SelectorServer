@@ -40,7 +40,8 @@ class CategoryEntry {
   }
 }
 
-// format 'Display Name': [ITEM_ID, [LORES], {sub-menu} or 'server-name']
+// format 'Display Name', ITEM_ID, [LORES], sub-menu or 'server-name']
+// 1.16 block IDs here: https://raw.githubusercontent.com/PrismarineJS/minecraft-data/master/data/pc/1.16.1/items.json
 const menu_map = [
   new ServerEntry('Lobby', 1, ['Server lobby', '', `${COLOR.RED}[v1.12.2+]`], 'lobby'),
   undefined,
