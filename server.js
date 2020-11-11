@@ -9,21 +9,21 @@ const listen_port = '25570';
 const force_selection = true;
 
 // server list and lore settings
-// use "\u00a7" for color prefix
-// format "Display Name": [ITEM_ID, [LORES], {sub-menu} or "server-name"]
+// use '\u00a7' for color prefix
+// format 'Display Name': [ITEM_ID, [LORES], {sub-menu} or 'server-name']
 const menu_map = {
-   "Category 1": [1, ["LORE1", "LORE2"], {
-       "Server 1": [1, ["LORE1", "LORE2"], "server-1"],
-       "Server 2": [1, ["LORE1", "LORE2"], "server-2"],
-       "Sub-Category": [2, ["LORE1", "LORE2"], {
-           "Server BLAH": [2, ["LORE1", "LORE2"], "blah"]
+   'Category 1': [1, ['LORE1', 'LORE2'], {
+       'Server 1': [1, ['LORE1', 'LORE2'], 'server-1'],
+       'Server 2': [1, ['LORE1', 'LORE2'], 'server-2'],
+       'Sub-Category': [2, ['LORE1', 'LORE2'], {
+           'Server BLAH': [2, ['LORE1', 'LORE2'], 'blah']
        }]
    }],
-   "Category 2": [420, ["LORE1", "LORE2"], {
-       "Some Server": [421, ["LORE1", "LORE2"], "server-other"]
+   'Category 2': [420, ['LORE1', 'LORE2'], {
+       'Some Server': [421, ['LORE1', 'LORE2'], 'server-other']
    }],
-   "Category 3": [69, ["LORE1"], {
-       "Some Server": [69, ["LORE1"], "server-other"]
+   'Category 3': [69, ['LORE1'], {
+       'Some Server': [69, ['LORE1'], 'server-other']
    }],
 };
 // item settings
@@ -97,7 +97,7 @@ server.on('login', function(client) {
     }
   });
   
-  client.on("window_click", function(packet){
+  client.on('window_click', function(packet){
       var slot = packet.slot;
       if (slot == client.functionalSlots[0]) {
         if(client.parentMenu.length == 0) {
@@ -115,8 +115,8 @@ server.on('login', function(client) {
       if (selected == undefined || selected == null) return; 
       var target = selected[2];
       if(target == null) return;
-      if(type(target) == "string") {
-        console.log("Transfering player [" + client.username + "] to server <" + target + ">... ");
+      if(type(target) == 'string') {
+        console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
         transferPlayer(client, target);
       } else {
         client.currentMenuLabel = Object.keys(client.currentMenu)[slot];
@@ -143,7 +143,7 @@ function updateClient(client){
   client.write('open_window', {
       windowId: 10,
       inventoryType: 'minecraft:chest', 
-      windowTitle: JSON.stringify(menu_title + (client.parentMenu.length == 0 ? "" : (" - " + client.currentMenuLabel))),
+      windowTitle: JSON.stringify(menu_title + (client.parentMenu.length == 0 ? '' : (' - ' + client.currentMenuLabel))),
       slotCount: slots_desired,
       entityId: 0,
   });
@@ -157,14 +157,14 @@ function updateClient(client){
   for(var i = items_i; i < slots_desired; i++) {
     if (i == client.functionalSlots[0]) {
       if(client.parentMenu.length != 0) {
-        items[i] = generateItem(item_functional, "<< BACK", []);
+        items[i] = generateItem(item_functional, '<< BACK', []);
       } else {
         items[i] = generateSpaceItem();
       }
       continue;
     }
     if (i == client.functionalSlots[1]) {
-      items[i] = generateItem(item_functional, "X QUIT", []);
+      items[i] = generateItem(item_functional, 'X QUIT', []);
       continue;
     }
     items[i] = generateSpaceItem();
@@ -199,14 +199,14 @@ function transferPlayer(client, target) {
   var offset = 0;
   buff_connect.writeUInt16BE(7, offset);
   offset += 2;
-  buff_connect.write("Connect", offset, encoding="utf8");
+  buff_connect.write('Connect', offset, encoding='utf8');
   offset += 7;
   buff_connect.writeUInt16BE(target.length, offset);
   offset += 2;
-  buff_connect.write(target, offset, target.length, "utf8");
+  buff_connect.write(target, offset, target.length, 'utf8');
   // offset += target.length;
-  client.write("custom_payload", {
-    channel: "BungeeCord",
+  client.write('custom_payload', {
+    channel: 'BungeeCord',
     data: buff_connect
   });
 }
