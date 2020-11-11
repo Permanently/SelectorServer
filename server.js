@@ -1,7 +1,7 @@
 /* ==== SETTINGS AREA ==== */
 // port binding
-const listen_host = "127.0.0.1";
-const listen_port = "25570";
+const listen_host = '0.0.0.0';
+const listen_port = '25570';
 
 // force player to join? 
 // true: can't quit by pressing ESC or E
@@ -26,48 +26,65 @@ const menu_map = {
 // item settings
 const item_server = 3;
 const item_category = 4;
-const item_functional = 2;
+const item_functional = 20;
 // messages
 const message_loading = '\u00a7aLoading... ';
-const menu_title = "\u00a70Choose a server";
-const message_error_exit = "You didn't select a server to join! ";
-const message_bye = "Bye! ";
+const menu_title = '\u00a70Choose a server';
+const message_error_exit = 'You didn\'t select a server to join! ';
+const message_bye = 'Bye!';
 
 /* == END OF SETTINGS AREA == */
 
-const type = require("type-detect");
+const type = require('type-detect');
 
 const mc = require('minecraft-protocol');
 const server = mc.createServer({
-  'online-mode': false,   // optional
-  encryption: true,      // optional
-  host: listen_host,       // optional
-  port: listen_port,           // optional
+  'online-mode': false, // optional
+  encryption: true,     // optional
+  host: listen_host,    // optional
+  port: listen_port,    // optional
+  // version: '1.16.3',
 });
+const mcData = require('minecraft-data')(server.version)
 
-console.log("Server is now started! ");
+console.log('Minecraft server is now started!');
 
 server.on('login', function(client) {
-  modifyClient(client);
+  
+  let loginPacket = mcData.loginPacket;
+
   client.write('login', {
-    entityId: 0,
-    levelType: 'default',
-    gameMode: 3,
-    dimension: 0,
-    difficulty: 2,
+    entityId: client.id,
+    isHardcore: false,
+    gameMode: 0,
+    previousGameMode: 255,
+    worldNames: loginPacket.worldNames,
+    dimensionCodec: loginPacket.dimensionCodec,
+    dimension: loginPacket.dimension,
+    worldName: 'minecraft:overworld',
+    hashedSeed: [0, 0],
     maxPlayers: server.maxPlayers,
-    reducedDebugInfo: false
+    viewDistance: 10,
+    reducedDebugInfo: false,
+    enableRespawnScreen: true,
+    isDebug: false,
+    isFlat: false
   });
+
   client.write('position', {
     x: 0,
-    y: 128.0+1.62,
+    y: 1,
     z: 0,
     yaw: 0,
     pitch: 0,
     flags: 0x00
   });
+
+  modifyClient(client);
+  
   client.sendChat(message_loading);
-  client.on("close_window", function(){
+
+  client.on('close_window', () => {
     if (force_selection) {
       client.parentMenu == null;
       client.currentMenu = menu_map;
@@ -112,7 +129,7 @@ server.on('login', function(client) {
 function updateClient(client){ 
   // close opened window first
   if(client.windowOpened) {
-    client.write("close_window", {
+    client.write('close_window', {
       windowId: 10
     });
     // keep that set to true
@@ -120,12 +137,12 @@ function updateClient(client){
   
   client.windowOpened = true;
   var slots_desired = ((parseInt(Object.keys(client.currentMenu).length / 9)) + 1) * 9;
-  client.write("open_window", {
+  client.write('open_window', {
       windowId: 10,
       inventoryType: "minecraft:chest", 
       windowTitle: JSON.stringify(menu_title + (client.parentMenu.length == 0 ? "" : (" - " + client.currentMenuLabel))),
       slotCount: slots_desired,
-      entityId: 0
+      entityId: 0,
   });
   var items = [];
   var items_i = 0;
@@ -150,7 +167,7 @@ function updateClient(client){
     items[i] = generateSpaceItem();
   } 
   
-  client.write("window_items", {
+  client.write('window_items', {
       windowId: 10,
       items: items
   });
@@ -162,14 +179,15 @@ function modifyClient(client) {
   client.currentMenuLabel = null;
   client.parentMenu = [];
   client.functionalSlots = []; // back, exit
-  client.sendChat = function(message){
-    var msg = {
-    translate: 'chat.type.announcement',
-    "with": [
-      message
-    ]
+  client.sendChat = (message) => {
+    const msg = {
+      translate: 'chat.type.announcement',
+      with: [
+        'SERVER',
+        message,
+      ]
     };
-    client.write("chat", { message: JSON.stringify(msg), position: 0 });
+    client.write('chat', { message: JSON.stringify(msg), position: 0, sender: '0' });
   };
 }
 
@@ -190,7 +208,7 @@ function transferPlayer(client, target) {
   });
 }
 
-function generateItem(id, label, lores) {
+function generateItem(id = 0, label = '', lores = []) {
   var displayValue = {
               "Name": {
                 type: "string",
@@ -206,9 +224,27 @@ function generateItem(id, label, lores) {
                   value: lores
                 }};
   }
-            
+
+  const Item = require('prismarine-item')('1.16.3');
+ 
+  const item = new Item(id, 1, null, {
+    name: '',
+    type: 'compound',
+    value: {
+      display: {
+        type: 'compound',
+        value: displayValue
+      }
+    }
+  });
+  
+  console.log(Item.toNotch(item));
+
+  return Item.toNotch(item);
+
   return {
-      blockId: id,
+      present: true,
+      itemId: id,
       itemCount: 1,
       itemDamage: 0,
       nbtData: {
@@ -225,5 +261,5 @@ function generateItem(id, label, lores) {
 }
 
 function generateSpaceItem() {
-  return generateItem(0, "", []);
+  return generateItem();
 }

@@ -1,0 +1,26 @@
+{
+  "name": "SelectorServer",
+  "version": "1.0.0",
+  "description": "Selector Server\r ===============",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DragonetMC/SelectorServer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DragonetMC/SelectorServer/issues"
+  },
+  "homepage": "https://github.com/DragonetMC/SelectorServer#readme",
+  "dependencies": {
+    "minecraft-protocol": "^1.19.0",
+    "prismarine-item": "^1.5.0",
+    "type-detect": "^4.0.8"
+  }
+}
