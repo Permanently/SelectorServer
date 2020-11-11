@@ -52,10 +52,7 @@ const menu_map = [
     new ServerEntry('ATM3', 102, ['All the mods 3', '', `${COLOR.RED}[v1.14.2]`], 'atm3'),
   ]),
 ];
-// item settings
-const item_server = 3;
-const item_category = 4;
-const item_functional = 20;
+
 // messages
 const message_loading = `${COLOR.AQUA}Loading...`;
 const menu_title = `${COLOR.DARK_GRAY}Choose a server`;
@@ -185,14 +182,16 @@ function updateClient(client){
   for(i = items.length; i < slots_desired; i++) {
     if (i == client.functionalSlots[0]) {
       if(client.parentMenu.length != 0) {
-        items[i] = generateItem(item_functional, '← BACK', []);
+        // TODO: Find a better item, maybe arrows
+        items[i] = generateItem(893, '← BACK', []);
       } else {
         items[i] = generateSpaceItem();
       }
       continue;
     }
     if (i == client.functionalSlots[1]) {
-      items[i] = generateItem(item_functional, '× QUIT', []);
+      // TODO: Find a better item, maybe barrier block
+      items[i] = generateItem(347, '× QUIT', []);
       continue;
     }
     items[i] = generateSpaceItem();
