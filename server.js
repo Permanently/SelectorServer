@@ -195,7 +195,7 @@ function modifyClient(client) {
 }
 
 function transferPlayer(client, target) {
-  var buff_connect = new Buffer(2+7+2+target.length);
+  var buff_connect = new Buffer.alloc(2+7+2+target.length);
   var offset = 0;
   buff_connect.writeUInt16BE(7, offset);
   offset += 2;
