@@ -142,7 +142,7 @@ function updateClient(client){
   var slots_desired = ((parseInt(Object.keys(client.currentMenu).length / 9)) + 1) * 9;
   client.write('open_window', {
       windowId: 10,
-      inventoryType: "minecraft:chest", 
+      inventoryType: 'minecraft:chest', 
       windowTitle: JSON.stringify(menu_title + (client.parentMenu.length == 0 ? "" : (" - " + client.currentMenuLabel))),
       slotCount: slots_desired,
       entityId: 0,
