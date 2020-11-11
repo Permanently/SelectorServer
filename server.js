@@ -23,15 +23,15 @@ const COLOR = {
 }
 
 // format 'Display Name': [ITEM_ID, [LORES], {sub-menu} or 'server-name']
+const empty_item = [0, [], '']
 const menu_map = {
   'Lobby': [1, ['Server lobby', '', `${COLOR.RED}[v1.12.2+]`], 'lobby'],
+  '-': empty_item,
   'Survival': [37, ['Vanilla survival', '', `${COLOR.RED}[v1.16.3]`], 'survival'],
   'Skyblock': [8, ['Vanilla skyblock', '', `${COLOR.RED}[v1.16.3]`], 'skyblock'],
+  '--': empty_item,
   'Modded': [75, ['A list of all our modded minecraft servers'], {
-    'Some Server': [102, ['LORE1', 'LORE2'], 'server-other']
-  }],
-  'Leaves': [69, ['LORE1'], {
-    'Some Server': [69, ['LORE1'], 'server-other']
+    'ATM3': [102, ['All the mods 3', '', `${COLOR.RED}[v1.14.2]`], 'atm3']
   }],
 };
 // item settings
@@ -53,6 +53,8 @@ const server = mc.createServer({
   encryption: true,
   host: listen_host,
   port: listen_port,
+  motd: `${COLOR.DARK_GRAY}Sparr0ws Lobby\n${COLOR.RED}[1.14+]`,
+  maxPlayers: 1337,
 });
 const mcData = require('minecraft-data')(server.version)
 
@@ -118,8 +120,10 @@ server.on('login', function(client) {
       var target = selected[2];
       if(target == null) return;
       if(type(target) == 'string') {
-        console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
-        transferPlayer(client, target);
+        if (target !== '') {
+          console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
+          transferPlayer(client, target);
+        }
       } else {
         client.currentMenuLabel = Object.keys(client.currentMenu)[slot];
         client.parentMenu.push(client.currentMenu);
@@ -141,7 +145,7 @@ function updateClient(client){
   }
   
   client.windowOpened = true;
-  var slots_desired = ((parseInt(Object.keys(client.currentMenu).length / 9)) + 1) * 9;
+  var slots_desired = ((parseInt(Object.keys(client.currentMenu).length / 9)) + 1) * 45;
   client.write('open_window', {
       windowId: 10,
       inventoryType: 'minecraft:chest', 
@@ -152,7 +156,11 @@ function updateClient(client){
   var items = [];
   var items_i = 0;
   for(var label in client.currentMenu) {
-    items.push(generateItem(client.currentMenu[label][0], label, client.currentMenu[label][1]));
+    if (client.currentMenu[label][2] == '') {
+      items.push(generateSpaceItem());
+    } else {
+      items.push(generateItem(client.currentMenu[label][0], label, client.currentMenu[label][1]));
+    }
     items_i ++;
   }
   client.functionalSlots = [slots_desired - 2, slots_desired - 1];
