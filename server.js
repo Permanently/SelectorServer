@@ -240,6 +240,8 @@ function transferPlayer(client, target) {
 }
 
 function generateItem(id = 0, label = '', lores = []) {
+  const Item = require('prismarine-item')('1.16');
+
   var displayValue = {
     Name: {
       type: 'string',
@@ -254,21 +256,18 @@ function generateItem(id = 0, label = '', lores = []) {
     }
   };
 
-  return {
-      present: true,
-      itemId: id,
-      itemCount: 1,
-      nbtData: {
-        name: '',
+  const item = new Item(id, 1, null, {
+    name: '',
+    type: 'compound',
+    value: {
+      display: {
         type: 'compound',
-        value: {
-          display: {
-            type: 'compound',
-            value: displayValue
-          }
-        }
+        value: displayValue
       }
     }
+  });
+
+  return Item.toNotch(item);
 }
 
 function generateSpaceItem() {
