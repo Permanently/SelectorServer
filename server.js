@@ -210,37 +210,18 @@ function transferPlayer(client, target) {
 
 function generateItem(id = 0, label = '', lores = []) {
   var displayValue = {
-              "Name": {
-                type: "string",
-                value: "\u00a7f" + label
-              }
-            };
-  
-  if (lores != undefined && lores != null && type(lores) == "Array") {
-    displayValue["Lore"] = {
-                type: "list",
-                value: {
-                  type: "string",
-                  value: lores
-                }};
-  }
-
-  const Item = require('prismarine-item')('1.16.3');
- 
-  const item = new Item(id, 1, null, {
-    name: '',
-    type: 'compound',
-    value: {
-      display: {
-        type: 'compound',
-        value: displayValue
+    Name: {
+      type: 'string',
+      value: label
+    },
+    Lore: {
+      type: 'list',
+      value: {
+        type: 'string',
+        value: 'test'
       }
     }
-  });
-  
-  console.log(Item.toNotch(item));
-
-  return Item.toNotch(item);
+  };
 
   return {
       present: true,
@@ -248,11 +229,11 @@ function generateItem(id = 0, label = '', lores = []) {
       itemCount: 1,
       itemDamage: 0,
       nbtData: {
-        name: "",
-        type: "compound",
+        name: '',
+        type: 'compound',
         value: {
-          "display": {
-            type: "compound",
+          display: {
+            type: 'compound',
             value: displayValue
           }
         }
