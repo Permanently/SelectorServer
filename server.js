@@ -22,18 +22,35 @@ const COLOR = {
   WHITE: '\u00a7f',
 }
 
+class ServerEntry {
+  constructor(title = '', icon = 0, lore = [], server = '') {
+    this.title = title;
+    this.icon = icon;
+    this.lore = lore;
+    this.server = server;
+  }
+}
+
+class CategoryEntry {
+  constructor(title = '', icon = 0, lore = [], servers = []) {
+    this.title = title;
+    this.icon = icon;
+    this.lore = lore;
+    this.servers = servers;
+  }
+}
+
 // format 'Display Name': [ITEM_ID, [LORES], {sub-menu} or 'server-name']
-const empty_item = [0, [], '']
-const menu_map = {
-  'Lobby': [1, ['Server lobby', '', `${COLOR.RED}[v1.12.2+]`], 'lobby'],
-  '-': empty_item,
-  'Survival': [37, ['Vanilla survival', '', `${COLOR.RED}[v1.16.3]`], 'survival'],
-  'Skyblock': [8, ['Vanilla skyblock', '', `${COLOR.RED}[v1.16.3]`], 'skyblock'],
-  '--': empty_item,
-  'Modded': [75, ['A list of all our modded minecraft servers'], {
-    'ATM3': [102, ['All the mods 3', '', `${COLOR.RED}[v1.14.2]`], 'atm3']
-  }],
-};
+const menu_map = [
+  new ServerEntry('Lobby', 1, ['Server lobby', '', `${COLOR.RED}[v1.12.2+]`], 'lobby'),
+  undefined,
+  new ServerEntry('Survival', 37, ['Vanilla survival', '', `${COLOR.RED}[v1.16.3]`], 'survival'),
+  new ServerEntry('Skyblock', 8, ['Vanilla skyblock', '', `${COLOR.RED}[v1.16.3]`], 'skyblock'),
+  undefined,
+  new CategoryEntry('Modded', 75, ['A list of all our modded minecraft servers'], [
+    new ServerEntry('ATM3', 102, ['All the mods 3', '', `${COLOR.RED}[v1.14.2]`], 'atm3'),
+  ]),
+];
 // item settings
 const item_server = 3;
 const item_category = 4;
@@ -100,7 +117,7 @@ server.on('login', function(client) {
     client.currentMenu = menu_map;
     updateClient(client);
   });
-  
+
   client.on('window_click', function(packet){
       var slot = packet.slot;
       if (slot == client.functionalSlots[0]) {
@@ -115,23 +132,23 @@ server.on('login', function(client) {
         client.end(message_bye);
         return;
       }
-      var selected = client.currentMenu[Object.keys(client.currentMenu)[slot]];
+      var selected = client.currentMenu[slot];
       if (selected == undefined || selected == null) return; 
-      var target = selected[2];
-      if(target == null) return;
-      if(type(target) == 'string') {
-        if (target !== '') {
-          console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
-          transferPlayer(client, target);
-        }
-      } else {
-        client.currentMenuLabel = Object.keys(client.currentMenu)[slot];
+
+      console.log('selected:', selected);
+      if(selected.server) {
+        target = selected.server;
+        console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
+        transferPlayer(client, target);
+      }
+      if (selected.servers) {
+        client.currentMenuLabel = client.currentMenu[slot].title || '';
         client.parentMenu.push(client.currentMenu);
-        client.currentMenu = target;
+        client.currentMenu = selected.servers;
         updateClient(client);
       }
   });
-  
+
   updateClient(client);
 });
 
@@ -141,11 +158,12 @@ function updateClient(client){
     client.write('close_window', {
       windowId: 10
     });
-    // keep that set to true
   }
   
   client.windowOpened = true;
-  var slots_desired = ((parseInt(Object.keys(client.currentMenu).length / 9)) + 1) * 45;
+  var slots_desired = 9;
+  
+  // Open the interface
   client.write('open_window', {
       windowId: 10,
       inventoryType: 'minecraft:chest', 
@@ -153,18 +171,17 @@ function updateClient(client){
       slotCount: slots_desired,
       entityId: 0,
   });
-  var items = [];
-  var items_i = 0;
-  for(var label in client.currentMenu) {
-    if (client.currentMenu[label][2] == '') {
-      items.push(generateSpaceItem());
-    } else {
-      items.push(generateItem(client.currentMenu[label][0], label, client.currentMenu[label][1]));
-    }
-    items_i ++;
-  }
+
+  const items = [];
+
+  // Add each of the menu items to the current menu
+  client.currentMenu.forEach(serv => {
+    items.push(!serv || serv.title == '' ? generateSpaceItem() : generateItem(serv.icon, serv.title, serv.lore));
+  });
+
+  // Generate back and quit buttons
   client.functionalSlots = [slots_desired - 2, slots_desired - 1];
-  for(var i = items_i; i < slots_desired; i++) {
+  for(i = items.length; i < slots_desired; i++) {
     if (i == client.functionalSlots[0]) {
       if(client.parentMenu.length != 0) {
         items[i] = generateItem(item_functional, '<< BACK', []);
@@ -178,8 +195,9 @@ function updateClient(client){
       continue;
     }
     items[i] = generateSpaceItem();
-  } 
-  
+  }
+
+  // Push the data to the client
   client.write('window_items', {
       windowId: 10,
       items: items
