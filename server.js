@@ -221,7 +221,7 @@ function generateItem(id = 0, label = '', lores = []) {
       type: 'list',
       value: {
         type: 'string',
-        value: 'test'
+        value: lores.map(l => JSON.stringify(l)),
       }
     }
   };
