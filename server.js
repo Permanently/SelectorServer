@@ -19,9 +19,12 @@ const menu_map = {
            "Server BLAH": [2, ["LORE1", "LORE2"], "blah"]
        }]
    }],
-   "Category 2": [2, ["LORE1", "LORE2"], {
+   "Category 2": [420, ["LORE1", "LORE2"], {
        "Some Server": [2, ["LORE1", "LORE2"], "server-other"]
-   }]
+   }],
+   "Category 3": [69, ["LORE1", "LORE2"], {
+       "Some Server": [2, ["LORE1", "LORE2"], "server-other"]
+   }],
 };
 // item settings
 const item_server = 3;
