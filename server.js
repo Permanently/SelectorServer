@@ -3,38 +3,45 @@
 const listen_host = '0.0.0.0';
 const listen_port = '25570';
 
-// force player to join? 
-// true: can't quit by pressing ESC or E
-// false: disconnect when pressed ESC or E
-const force_selection = true;
+const COLOR = {
+  BLACK: '\u00a70',
+  DARK_BLUE: '\u00a71',
+  DARK_GREEN: '\u00a72',
+  DARK_AQUA: '\u00a73',
+  DARK_RED: '\u00a74',
+  PURPLE: '\u00a75',
+  ORANGE: '\u00a76',
+  LIGHT_GRAY: '\u00a77',
+  DARK_GRAY: '\u00a78',
+  BLUE: '\u00a79',
+  GREEN: '\u00a7a',
+  AQUA: '\u00a7b',
+  RED: '\u00a7c',
+  PINK: '\u00a7d',
+  YELLOW: '\u00a7e',
+  WHITE: '\u00a7f',
+}
 
-// server list and lore settings
-// use '\u00a7' for color prefix
 // format 'Display Name': [ITEM_ID, [LORES], {sub-menu} or 'server-name']
 const menu_map = {
-   'Category 1': [1, ['LORE1', 'LORE2'], {
-       'Server 1': [1, ['LORE1', 'LORE2'], 'server-1'],
-       'Server 2': [1, ['LORE1', 'LORE2'], 'server-2'],
-       'Sub-Category': [2, ['LORE1', 'LORE2'], {
-           'Server BLAH': [2, ['LORE1', 'LORE2'], 'blah']
-       }]
-   }],
-   'Category 2': [420, ['LORE1', 'LORE2'], {
-       'Some Server': [421, ['LORE1', 'LORE2'], 'server-other']
-   }],
-   'Category 3': [69, ['LORE1'], {
-       'Some Server': [69, ['LORE1'], 'server-other']
-   }],
+  'Lobby': [1, ['Server lobby', '', `${COLOR.RED}[v1.12.2+]`], 'lobby'],
+  'Survival': [37, ['Vanilla survival', '', `${COLOR.RED}[v1.16.3]`], 'survival'],
+  'Skyblock': [8, ['Vanilla skyblock', '', `${COLOR.RED}[v1.16.3]`], 'skyblock'],
+  'Modded': [75, ['A list of all our modded minecraft servers'], {
+    'Some Server': [102, ['LORE1', 'LORE2'], 'server-other']
+  }],
+  'Leaves': [69, ['LORE1'], {
+    'Some Server': [69, ['LORE1'], 'server-other']
+  }],
 };
 // item settings
 const item_server = 3;
 const item_category = 4;
 const item_functional = 20;
 // messages
-const message_loading = '\u00a7aLoading... ';
-const menu_title = '\u00a70Choose a server';
-const message_error_exit = 'You didn\'t select a server to join! ';
-const message_bye = 'Have a good day!';
+const message_loading = `${COLOR.AQUA}Loading...`;
+const menu_title = `${COLOR.DARK_GRAY}Choose a server`;
+const message_bye = `${COLOR.AQUA}Have a good day!`;
 
 /* == END OF SETTINGS AREA == */
 
@@ -42,11 +49,10 @@ const type = require('type-detect');
 
 const mc = require('minecraft-protocol');
 const server = mc.createServer({
-  'online-mode': false, // optional
-  encryption: true,     // optional
-  host: listen_host,    // optional
-  port: listen_port,    // optional
-  // version: '1.16.3',
+  'online-mode': false,
+  encryption: true,
+  host: listen_host,
+  port: listen_port,
 });
 const mcData = require('minecraft-data')(server.version)
 
@@ -88,13 +94,9 @@ server.on('login', function(client) {
   client.sendChat(message_loading);
 
   client.on('close_window', () => {
-    if (force_selection) {
-      client.parentMenu == null;
-      client.currentMenu = menu_map;
-      updateClient(client);
-    } else {
-      client.end(message_error_exit);
-    }
+    client.parentMenu == null;
+    client.currentMenu = menu_map;
+    updateClient(client);
   });
   
   client.on('window_click', function(packet){
@@ -230,7 +232,6 @@ function generateItem(id = 0, label = '', lores = []) {
       present: true,
       itemId: id,
       itemCount: 1,
-      itemDamage: 0,
       nbtData: {
         name: '',
         type: 'compound',
