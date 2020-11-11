@@ -113,8 +113,9 @@ server.on('login', function(client) {
   client.sendChat(message_loading);
 
   client.on('close_window', () => {
-    client.parentMenu == null;
     client.currentMenu = menu_map;
+    client.currentMenuLabel = null;
+    client.parentMenu = [];
     updateClient(client);
   });
 
@@ -135,10 +136,9 @@ server.on('login', function(client) {
       var selected = client.currentMenu[slot];
       if (selected == undefined || selected == null) return; 
 
-      console.log('selected:', selected);
       if(selected.server) {
         target = selected.server;
-        console.log('Transfering player [' + client.username + '] to server <' + target + '>... ');
+        console.log(`Transfering player [${client.username}] to server <${target}>`);
         transferPlayer(client, target);
       }
       if (selected.servers) {
@@ -184,14 +184,14 @@ function updateClient(client){
   for(i = items.length; i < slots_desired; i++) {
     if (i == client.functionalSlots[0]) {
       if(client.parentMenu.length != 0) {
-        items[i] = generateItem(item_functional, '<< BACK', []);
+        items[i] = generateItem(item_functional, '← BACK', []);
       } else {
         items[i] = generateSpaceItem();
       }
       continue;
     }
     if (i == client.functionalSlots[1]) {
-      items[i] = generateItem(item_functional, 'X QUIT', []);
+      items[i] = generateItem(item_functional, '× QUIT', []);
       continue;
     }
     items[i] = generateSpaceItem();
