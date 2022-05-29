@@ -69,7 +69,7 @@ server.on('login', function(client) {
   client.sendChat(message_loading);
   client.on("close_window", function(){
     if (force_selection) {
-      client.parentMenu == null;
+      client.parentMenu === null;
       client.currentMenu = menu_map;
       updateClient(client);
     } else {
@@ -92,9 +92,9 @@ server.on('login', function(client) {
         return;
       }
       var selected = client.currentMenu[Object.keys(client.currentMenu)[slot]];
-      if (selected == undefined || selected == null) return; 
+      if (selected == undefined || selected === null) return; 
       var target = selected[2];
-      if(target == null) return;
+      if(target === null) return;
       if(type(target) == "string") {
         console.log("Transfering player [" + client.username + "] to server <" + target + ">... ");
         transferPlayer(client, target);
@@ -198,7 +198,7 @@ function generateItem(id, label, lores) {
               }
             };
   
-  if (lores != undefined && lores != null && type(lores) == "Array") {
+  if (lores != undefined && lores !== null && type(lores) == "Array") {
     displayValue["Lore"] = {
                 type: "list",
                 value: {
