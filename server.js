@@ -69,7 +69,7 @@ server.on('login', function(client) {
   client.sendChat(message_loading);
   client.on("close_window", function(){
     if (force_selection) {
-      client.parentMenu == null;
+      
       client.currentMenu = menu_map;
       updateClient(client);
     } else {
